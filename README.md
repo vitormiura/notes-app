@@ -1,2 +1,1 @@
-# deixei-logado-kkkkkkkkkkkkk
-KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
+# cfg´s
