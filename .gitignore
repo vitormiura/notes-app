@@ -5,6 +5,11 @@
 /.pnp
 .pnp.js
 
+# bosch proxy
+/package-lock.json
+
+.env
+
 # testing
 /coverage
 
