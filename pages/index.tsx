@@ -36,8 +36,14 @@ const Home = ({ notes }: Notes) => {
         },
         method: "POST",
       }).then(() => {
-        setForm({ title: "", content: "", id: "" });
-        refreshData();
+        if (data.id) {
+          deleteNote(data.id);
+          setForm({ title: "", content: "", id: "" });
+          refreshData();
+        }else{
+          setForm({title: '', content:'', id:''})
+          refreshData()
+        }
       });
     } catch (error) {
       console.log(error);
@@ -69,7 +75,7 @@ const Home = ({ notes }: Notes) => {
 
   return (
     <div>
-      <h1 className="text-center font-bold text-2xl mt-4">Notes</h1>
+      <h1 className="text-center font-bold text-2xl mt-4">Moita Notes</h1>
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -103,7 +109,24 @@ const Home = ({ notes }: Notes) => {
                   <h3 className="font-bold">{note.title}</h3>
                   <p className="font-sm">{note.content}</p>
                 </div>
-                <button onClick={() => deleteNote(note.id)} className='bg-red-500 text-white rounded px-2'>X</button>
+                <button
+                  onClick={() =>
+                    setForm({
+                      title: note.title,
+                      content: note.content,
+                      id: note.id,
+                    })
+                  }
+                  className="bg-blue-500 text-white rounded px-3 mr-3"
+                >
+                  Update
+                </button>
+                <button
+                  onClick={() => deleteNote(note.id)}
+                  className="bg-red-500 text-white rounded px-3"
+                >
+                  X
+                </button>
               </div>
             </li>
           ))}
