@@ -37,7 +37,22 @@ const Home = ({ notes }: Notes) => {
         method: "POST",
       }).then(() => {
         setForm({ title: "", content: "", id: "" });
-        refreshData()
+        refreshData();
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function deleteNote(id: string) {
+    try {
+      fetch(`http://localhost:3000/api/note/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "DELETE",
+      }).then(() => {
+        refreshData();
       });
     } catch (error) {
       console.log(error);
@@ -88,6 +103,7 @@ const Home = ({ notes }: Notes) => {
                   <h3 className="font-bold">{note.title}</h3>
                   <p className="font-sm">{note.content}</p>
                 </div>
+                <button onClick={() => deleteNote(note.id)} className='bg-red-500 text-white rounded px-2'>X</button>
               </div>
             </li>
           ))}
