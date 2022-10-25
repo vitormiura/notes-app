@@ -1,7 +1,17 @@
-import type { NextPage } from "next";
+import type { GetServerSideProps, NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import { useState } from "react";
+import { prisma } from "../lib/prisma";
+
+interface Notes {
+  notes: {
+    id: string;
+    title: string;
+    content: string;
+  }[];
+}
 
 interface FormData {
   title: string;
@@ -9,8 +19,13 @@ interface FormData {
   id: string;
 }
 
-const Home: NextPage = () => {
+const Home = ({ notes }: Notes) => {
   const [form, setForm] = useState({ title: "", content: "", id: "" });
+
+  const router = useRouter();
+  const refreshData = () => {
+    router.replace(router.asPath);
+  };
 
   async function create(data: FormData) {
     try {
@@ -20,7 +35,10 @@ const Home: NextPage = () => {
           "Content-Type": "application/json",
         },
         method: "POST",
-      }).then(() => setForm({ title: "", content: "", id: "" }));
+      }).then(() => {
+        setForm({ title: "", content: "", id: "" });
+        refreshData()
+      });
     } catch (error) {
       console.log(error);
     }
@@ -40,7 +58,7 @@ const Home: NextPage = () => {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          handleSubmit(form)
+          handleSubmit(form);
         }}
         className="w-auto min-w-[25%] max-w-min mx-auto space-y-6 flex flex-col items-stretch"
       >
@@ -61,8 +79,38 @@ const Home: NextPage = () => {
           Add Note
         </button>
       </form>
+      <div className="w-auto min-w-[25%] max-w-min mt-20 mx-auto space-y-6 flex flex-col items-stretch">
+        <ul>
+          {notes.map((note) => (
+            <li key={note.id} className="border-b border-gray-600 p-2">
+              <div className="flex justify-between">
+                <div className="flex-1">
+                  <h3 className="font-bold">{note.title}</h3>
+                  <p className="font-sm">{note.content}</p>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };
 
 export default Home;
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  const notes = await prisma.note.findMany({
+    select: {
+      title: true,
+      id: true,
+      content: true,
+    },
+  });
+
+  return {
+    props: {
+      notes,
+    },
+  };
+};
